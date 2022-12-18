@@ -1,7 +1,9 @@
 package ru.mpei.ui.screens.charts
 
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.withContext
 import ru.mpei.ui.screens.charts.chart.EquationSystem
 import ru.mpei.ui.screens.charts.chart.Parameters
 import ru.mpei.ui.screens.charts.chart.Steps
@@ -26,6 +28,8 @@ class ChartsViewModel {
     private val _m: MutableStateFlow<Float> = MutableStateFlow(value = Parameters.M.defaultValue)
     private val _s: MutableStateFlow<Float> = MutableStateFlow(value = Parameters.S.defaultValue)
     private val _result: MutableStateFlow<List<Variables>> = MutableStateFlow(emptyList())
+    private val _steps: MutableStateFlow<Steps> =
+        MutableStateFlow(Steps(emptyList(), emptyList(), emptyList(), emptyList()))
 
     val speed: StateFlow<Float> = _speed
     val angle: StateFlow<Float> = _angle
@@ -35,6 +39,7 @@ class ChartsViewModel {
     val m: StateFlow<Float> = _m
     val s: StateFlow<Float> = _s
     val result: StateFlow<List<Variables>> = _result
+    val steps: StateFlow<Steps> = _steps
 
     fun showError(message: String) {
         _errorMessage.value = message
@@ -73,7 +78,7 @@ class ChartsViewModel {
         _s.value = value
     }
 
-    fun solve() {
+    suspend fun solve() = withContext(Dispatchers.Default) {
         _result.value = equationSystem.solve(
             speed = speed.value,
             angle = angle.value,
@@ -83,37 +88,27 @@ class ChartsViewModel {
             m = m.value,
             s = s.value
         )
+        getSteps()
     }
 
-    val steps: Steps
-        get() {
-            val max = maxVariables(variables = result.value)
-            val min = minVariables(variables = result.value)
-            val step = Variables(
-                x = max.x step min.x,
-                y = max.y step min.y,
-                u = max.u step min.u,
-                v = max.v step min.v
-            )
-            val stepCountX = stepsCount(max.x)
-            val stepCountY = stepsCount(max.y)
-            val stepCountU = stepsCount(max.u)
-            val stepCountV = stepsCount(max.v)
-            return Steps(
-                stepsX = (0..stepCountX).map { min.x + it * step.x },
-                stepsY = (0..stepCountY).map { min.y + it * step.y },
-                stepsU = (0..stepCountU).map { min.u + it * step.u },
-                stepsV = (0..stepCountV).map { min.v + it * step.v },
-            )
-        }
-
-    private fun stepsCount(value: Float): Int {
-        return if (value < 100f) 9
-        else if (value < 1000f) 7
-        else 5
+    private suspend fun getSteps() {
+        val max = maxVariables(variables = result.value)
+        val min = minVariables(variables = result.value)
+        val step = Variables(
+            x = max.x step min.x,
+            y = max.y step min.y,
+            u = max.u step min.u,
+            v = max.v step min.v
+        )
+        _steps.value = Steps(
+            stepsX = (0..STEPS_COUNT).map { min.x + it * step.x },
+            stepsY = (0..STEPS_COUNT).map { min.y + it * step.y },
+            stepsU = (0..STEPS_COUNT).map { min.u + it * step.u },
+            stepsV = (0..STEPS_COUNT).map { min.v + it * step.v },
+        )
     }
 
-    private infix fun Float.step(value: Float): Float = (this - value) / stepsCount(value = this)
+    private infix fun Float.step(value: Float): Float = (this - value) / STEPS_COUNT
 
     private fun maxVariables(variables: List<Variables>): Variables {
         val maxX = variables.maxOf { it.x }

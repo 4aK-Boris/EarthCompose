@@ -44,12 +44,6 @@ fun ModelScreen(paddingValues: PaddingValues) {
         color = Color.Black
     )
 
-    val subscript = SpanStyle(
-        baselineShift = BaselineShift.Subscript,
-        fontSize = 14.sp,
-        color = Color.Black
-    )
-
     val modifier = Modifier.padding(horizontal = 32.dp, vertical = 16.dp)
     val enumerationModifier = Modifier.padding(start = 64.dp, end = 32.dp, bottom = 12.dp)
 
@@ -143,6 +137,112 @@ fun ModelScreen(paddingValues: PaddingValues) {
                     " брошенного под углом к горизонту," +
                     " а так же позволяет наблюдать за его поведением эпидемии при изменении параметров," +
                     " описанных в математической модели.", modifier = modifier)
+        }
+        item {
+            OrdinaryText(text = "Доступно изменение следующих параметров:", modifier = modifier)
+        }
+        item {
+            EnumerationText(text = "Начальная скорость тела", modifier = enumerationModifier)
+        }
+        item {
+            Image(
+                painter = painterResource(resourcePath = "speed.png"),
+                contentDescription = "Начальная скорость тела",
+                modifier = modifier.fillMaxWidth(fraction = 0.8f)
+            )
+        }
+        item {
+            EnumerationText(text = "Угол между вектором скорости и осью X", modifier = enumerationModifier)
+        }
+        item {
+            Image(
+                painter = painterResource(resourcePath = "angle.png"),
+                contentDescription = "Угол между вектором скорости и осью X",
+                modifier = modifier.fillMaxWidth(fraction = 0.8f)
+            )
+        }
+        item {
+            EnumerationText(text = "Начальная высота", modifier = enumerationModifier)
+        }
+        item {
+            Image(
+                painter = painterResource(resourcePath = "height.png"),
+                contentDescription = "Начальная высота",
+                modifier = modifier.fillMaxWidth(fraction = 0.8f)
+            )
+        }
+        item {
+            EnumerationText(text = "Скорость ветра", modifier = enumerationModifier)
+        }
+        item {
+            Image(
+                painter = painterResource(resourcePath = "wing_speed.png"),
+                contentDescription = "Скорость ветра",
+                modifier = modifier.fillMaxWidth(fraction = 0.8f)
+            )
+        }
+        item {
+            EnumerationText(text = "Коэффициент лобового сопротивления", modifier = enumerationModifier)
+        }
+        item {
+            Image(
+                painter = painterResource(resourcePath = "c.png"),
+                contentDescription = "Коэффициент лобового сопротивления",
+                modifier = modifier.fillMaxWidth(fraction = 0.8f)
+            )
+        }
+        item {
+            EnumerationText(text = "Масса тела", modifier = enumerationModifier)
+        }
+        item {
+            Image(
+                painter = painterResource(resourcePath = "m.png"),
+                contentDescription = "Масса тела",
+                modifier = modifier.fillMaxWidth(fraction = 0.8f)
+            )
+        }
+        item {
+            EnumerationText(text = "Площадь поперечного сечения", modifier = enumerationModifier)
+        }
+        item {
+            Image(
+                painter = painterResource(resourcePath = "s.png"),
+                contentDescription = "Площадь поперечного сечения",
+                modifier = modifier.fillMaxWidth(fraction = 0.8f)
+            )
+        }
+        item {
+            OrdinaryText(text = "Также пользователю доступно несколько графиков:", modifier = modifier)
+        }
+        item {
+            EnumerationText(text = "Зависимость x от y", modifier = enumerationModifier)
+        }
+        item {
+            Image(
+                painter = painterResource(resourcePath = "xy.png"),
+                contentDescription = "Зависимость x от y",
+                modifier = modifier.fillMaxWidth(fraction = 0.8f)
+            )
+        }
+        item {
+            EnumerationText(text = "Зависимость x от v", modifier = enumerationModifier)
+        }
+        item {
+            Image(
+                painter = painterResource(resourcePath = "xv.png"),
+                contentDescription = "Зависимость x от v",
+                modifier = modifier.fillMaxWidth(fraction = 0.8f)
+            )
+        }
+        item {
+            EnumerationText(text = "Зависимость y от v", modifier = enumerationModifier)
+        }
+        item {
+            Image(
+                painter = painterResource(resourcePath = "yv.png"),
+                contentDescription = "Зависимость y от v",
+                modifier = modifier.fillMaxWidth(fraction = 0.8f)
+            )
         }
         item {
             Spacer(modifier = Modifier.height(height = 16.dp))

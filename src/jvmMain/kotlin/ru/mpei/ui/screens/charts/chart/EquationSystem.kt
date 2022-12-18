@@ -16,7 +16,7 @@ class EquationSystem {
         m: Float,
         s: Float
     ): List<Variables> {
-        var variables = Variables(x = 0f, y = height, u = (angle / 180 * PI).toFloat(), v = speed)
+        var variables = Variables(x = 0f, y = height, u = angle.angleToPi(), v = speed)
         val list = mutableListOf(variables)
         do {
             val buffer = Variables(
@@ -29,7 +29,7 @@ class EquationSystem {
             variables = buffer
         } while (variables.y > 0)
         return list.map {
-            it.copy(u = (it.u / PI * 180).toFloat())
+            it.copy(u = it.u.angleToDegree())
         }
     }
 
@@ -44,17 +44,15 @@ class EquationSystem {
 
     private fun d(v: Float, c: Float, s: Float): Float = c * p * s * v.pow(2) / 2
 
-    companion object {
-        const val SPEED = 10f
-        const val ANGLE = 45f
-        const val HEIGHT = 0f
-        const val WIND_SPEED = 0f
-        const val C = 0.1f
-        const val M = 1f
-        const val S = 0.01f
+    private fun Float.angleToPi() = this * PI.toFloat() / PI180
 
-        private const val h = 0.001f
+    private fun Float.angleToDegree() = this * PI180 / PI.toFloat()
+
+    companion object {
+        private const val h = 0.0001f
         private const val g = 9.80665f
         private const val p = 1.29f
+
+        private const val PI180 = 180f
     }
 }
