@@ -224,7 +224,7 @@ private fun Parameter(
         ParameterTextField(value = value.toString(), onValueChanged = {
             try {
                 onValueChanged(it.toFloat())
-            } catch (e: NumberFormatException) {
+            } catch (e: Throwable) {
                 onChangeErrorMessage("Число введено в неверном формате")
             }
         }, inc = {

@@ -46,7 +46,7 @@ enum class Parameters(val minValue: Float, val maxValue: Float, val defaultValue
                 }
             }
     },
-    C(minValue = 0f, maxValue = 0.5f, defaultValue = 0.1f, step = 0.05f) {
+    C(minValue = 0f, maxValue = 1f, defaultValue = 0.1f, step = 0.05f) {
 
         override val title: AnnotatedString
             get() = buildAnnotatedString {

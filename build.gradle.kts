@@ -26,7 +26,6 @@ kotlin {
             dependencies {
                 implementation(compose.desktop.currentOs)
                 implementation(dependencyNotation = "io.insert-koin:koin-core:3.3.0")
-                implementation(dependencyNotation = "androidx.core:core-ktx:1.9.0")
             }
         }
         val jvmTest by getting {
@@ -40,11 +39,14 @@ kotlin {
 
 compose.desktop {
     application {
-        mainClass = "MainKt"
+        mainClass = "ru.mpei.MainKt"
         nativeDistributions {
-            targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
+            targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb, TargetFormat.Exe)
             packageName = "EarthCompose"
             packageVersion = "1.0.0"
+            windows {
+                iconFile.set(project.file("title.ico"))
+            }
         }
     }
 }
