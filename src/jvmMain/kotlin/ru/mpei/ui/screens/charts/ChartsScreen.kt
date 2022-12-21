@@ -47,7 +47,7 @@ import java.util.*
 import ru.mpei.ui.Green300
 import ru.mpei.ui.Green800
 import ru.mpei.ui.Purple700
-import ru.mpei.ui.screens.charts.chart.Parameters
+import ru.mpei.ui.screens.charts.chart.Parameter
 
 
 @Composable
@@ -61,11 +61,17 @@ fun ChartsScreen(paddingValues: PaddingValues, viewModel: ChartsViewModel) {
     val m by viewModel.m.collectAsState()
     val s by viewModel.s.collectAsState()
 
+    val parameter by viewModel.parameter.collectAsState()
+
     val errorState by viewModel.errorState.collectAsState()
     val errorMessage by viewModel.errorMessage.collectAsState()
 
     LaunchedEffect(speed, angle, height, windSpeed, c, m, s) {
         viewModel.solve()
+    }
+
+    LaunchedEffect(key1 = parameter) {
+        viewModel.parameterSolve()
     }
 
     ChartAlertDialog(
@@ -77,7 +83,7 @@ fun ChartsScreen(paddingValues: PaddingValues, viewModel: ChartsViewModel) {
     Row(modifier = Modifier.padding(paddingValues = paddingValues).fillMaxSize(), verticalAlignment = Alignment.Top) {
 
         Box(
-            modifier = Modifier.padding(all = 16.dp).fillMaxWidth(fraction = 0.5f).fillMaxHeight(),
+            modifier = Modifier.padding(all = 16.dp).fillMaxWidth(fraction = (0.5f).toFloat()).fillMaxHeight(),
             contentAlignment = Alignment.Center
         ) {
             Charts(viewModel = viewModel)
@@ -105,7 +111,7 @@ fun ChartsScreen(paddingValues: PaddingValues, viewModel: ChartsViewModel) {
                 Parameter(
                     value = speed,
                     onValueChanged = viewModel::onSpeedChanged,
-                    parameter = Parameters.SPEED,
+                    parameter = Parameter.SPEED,
                     onChangeErrorMessage = viewModel::showError
                 )
             }
@@ -114,7 +120,7 @@ fun ChartsScreen(paddingValues: PaddingValues, viewModel: ChartsViewModel) {
                 Parameter(
                     value = angle,
                     onValueChanged = viewModel::onAngleChanged,
-                    parameter = Parameters.ANGLE,
+                    parameter = Parameter.ANGLE,
                     onChangeErrorMessage = viewModel::showError
                 )
             }
@@ -123,7 +129,7 @@ fun ChartsScreen(paddingValues: PaddingValues, viewModel: ChartsViewModel) {
                 Parameter(
                     value = height,
                     onValueChanged = viewModel::onHeightChanged,
-                    parameter = Parameters.HEIGHT,
+                    parameter = Parameter.HEIGHT,
                     onChangeErrorMessage = viewModel::showError
                 )
             }
@@ -132,7 +138,7 @@ fun ChartsScreen(paddingValues: PaddingValues, viewModel: ChartsViewModel) {
                 Parameter(
                     value = windSpeed,
                     onValueChanged = viewModel::onWindSpeedChanged,
-                    parameter = Parameters.WIND_SPEED,
+                    parameter = Parameter.WIND_SPEED,
                     onChangeErrorMessage = viewModel::showError
                 )
             }
@@ -141,7 +147,7 @@ fun ChartsScreen(paddingValues: PaddingValues, viewModel: ChartsViewModel) {
                 Parameter(
                     value = c,
                     onValueChanged = viewModel::onCChanged,
-                    parameter = Parameters.C,
+                    parameter = Parameter.C,
                     onChangeErrorMessage = viewModel::showError
                 )
             }
@@ -150,7 +156,7 @@ fun ChartsScreen(paddingValues: PaddingValues, viewModel: ChartsViewModel) {
                 Parameter(
                     value = m,
                     onValueChanged = viewModel::onMChanged,
-                    parameter = Parameters.M,
+                    parameter = Parameter.M,
                     onChangeErrorMessage = viewModel::showError
                 )
             }
@@ -159,7 +165,7 @@ fun ChartsScreen(paddingValues: PaddingValues, viewModel: ChartsViewModel) {
                 Parameter(
                     value = s,
                     onValueChanged = viewModel::onSChanged,
-                    parameter = Parameters.S,
+                    parameter = Parameter.S,
                     onChangeErrorMessage = viewModel::showError
                 )
             }
@@ -204,7 +210,7 @@ private fun ChartAlertDialog(
 
 @Composable
 private fun Parameter(
-    parameter: Parameters,
+    parameter: Parameter,
     value: Float,
     onValueChanged: (Float) -> Unit,
     onChangeErrorMessage: (String) -> Unit
@@ -214,13 +220,6 @@ private fun Parameter(
         horizontalArrangement = Arrangement.Start,
         modifier = Modifier.padding(vertical = 16.dp)
     ) {
-
-        val (sliderValue, onSliderValueChanged) = remember { mutableStateOf(value = value) }
-
-        LaunchedEffect(key1 = value) {
-            onSliderValueChanged(value)
-        }
-
         ParameterTextField(value = value.toString(), onValueChanged = {
             try {
                 onValueChanged(it.toFloat())
@@ -228,20 +227,11 @@ private fun Parameter(
                 onChangeErrorMessage("Число введено в неверном формате")
             }
         }, inc = {
-            onValueChanged(
-                if (value + parameter.step > parameter.maxValue) {
-                    parameter.maxValue
-                } else {
-                    value + parameter.step
-                }
-            )
+            onValueChanged(parameter.nextValue(value = value))
+            println(parameter.nextValue(value = value))
         }, dec = {
             onValueChanged(
-                if (value - parameter.step < parameter.minValue) {
-                    parameter.minValue
-                } else {
-                    value - parameter.step
-                }
+                parameter.prevValue(value = value)
             )
         })
 
@@ -260,12 +250,10 @@ private fun Parameter(
                 maxLines = 1
             )
             Slider(
-                value = sliderValue,
-                onValueChange = onSliderValueChanged,
+                value = value,
+                onValueChange = onValueChanged,
                 valueRange = parameter.minValue..parameter.maxValue,
-                onValueChangeFinished = {
-                    onValueChanged((sliderValue * 1000).toInt().toFloat() / 1000)
-                }
+                steps = parameter.stepsCount - 1
             )
         }
     }
